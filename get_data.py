@@ -16,12 +16,15 @@ def kill_beat(latidos, anotaciones, latido_a_eliminar,cant_org,tam):
 
 def crate_training_cases(latidos, anotaciones, char, cant_training, cant_org, tam):
     training_set = np.zeros([cant_training,2*tam])
+    j_ant = 0
     for i in range(0,cant_training):
-        for j in range(0,cant_org):
+        print 1.0 * i / cant_training
+        for j in range(j_ant, cant_org):
             if anotaciones[j] == char:
                 training_set[i] = latidos[j]
                 [latidos, anotaciones] = kill_beat(latidos,anotaciones,j,cant_org,tam)
                 cant_org -= 1
+                j_ant = j
                 break
 
     return training_set,latidos,anotaciones
@@ -59,41 +62,50 @@ anotaciones = annotation.anntype
 
 #genero training set
 N = 10  #cantidad de latidos normales en el training set
-V = 10  #cantidad de latidos ventriculares en el training set
-S = 10  #cantidad de latidos superventriculares prematuros en el training set
-J = 10  #cantidad de latidos nodales prematuros en el training set
+V = 20  # cantidad de latidos ventriculares en el training set
+S = 20  # cantidad de latidos superventriculares prematuros en el training set
+J = 20  # cantidad de latidos nodales prematuros en el training set
 print anotaciones
 
-print 'N'
-[training_set_N,latidosNorm,anotaciones] = crate_training_cases(latidosNorm,anotaciones,'N',N,cantLatidos,tam)
-cantLatidos -= N
-print 'V'
-[training_set_V,latidosNorm,anotaciones] = crate_training_cases(latidosNorm,anotaciones,'V',V,cantLatidos,tam)
-cantLatidos -= V
-print 'S'
-[training_set_S,latidosNorm,anotaciones] = crate_training_cases(latidosNorm,anotaciones,'S',S,cantLatidos,tam)
-cantLatidos -= S
-print 'J'
-[training_set_J,latidosNorm,anotaciones] = crate_training_cases(latidosNorm,anotaciones,'J',J,cantLatidos,tam)
-cantLatidos -= J
-plt.figure()
-for i in range(0, N):
-    plt.plot(training_set_N[i])
-plt.figure()
-for i in range(0, V):
-    plt.plot(training_set_V[i])
-plt.figure()
-for i in range(0, S):
-    plt.plot(training_set_S[i])
-plt.figure()
-for i in range(0, J):
-    plt.plot(training_set_J[i])
-
-sio.savemat('training_set_J.mat', {'training_set_J': training_set_J})
-sio.savemat('training_set_V.mat', {'training_set_V': training_set_V})
-sio.savemat('training_set_S.mat', {'training_set_S': training_set_S})
-sio.savemat('training_set_N.mat', {'training_set_N': training_set_N})
-sio.savemat('latidosNorm.mat', {'latidosNorm': latidosNorm})
-sio.savemat('anotaciones', {'anotaciones': anotaciones})
-cantidades = [cantLatidos, N, V, S, J]
+# print 'N'
+# [training_set_N,latidosNorm,anotaciones] = crate_training_cases(latidosNorm,anotaciones,'N',N,cantLatidos,tam)
+# cantLatidos -= N
+# print 'V'
+# [training_set_V,latidosNorm,anotaciones] = crate_training_cases(latidosNorm,anotaciones,'V',V,cantLatidos,tam)
+# cantLatidos -= V
+# print 'S'
+# [training_set_S,latidosNorm,anotaciones] = crate_training_cases(latidosNorm,anotaciones,'S',S,cantLatidos,tam)
+# cantLatidos -= S
+# print 'J'
+# [training_set_J,latidosNorm,anotaciones] = crate_training_cases(latidosNorm,anotaciones,'J',J,cantLatidos,tam)
+# cantLatidos -= J
+V_left = 0
+for i in range(0, cantLatidos):
+    if anotaciones[i] == 'V':
+        V_left += 1
+[all_V, latidosNorm, anotaciones] = crate_training_cases(latidosNorm, anotaciones, 'V', V_left, cantLatidos, tam)
+cantLatidos -= V_left
+S_left = 0
+for i in range(0, cantLatidos):
+    if anotaciones[i] == 'S':
+        S_left += 1
+[all_S, latidosNorm, anotaciones] = crate_training_cases(latidosNorm, anotaciones, 'S', S_left, cantLatidos, tam)
+cantLatidos -= S_left
+J_left = 0
+for i in range(0, cantLatidos):
+    if anotaciones[i] == 'J':
+        J_left += 1
+[all_J, latidosNorm, anotaciones] = crate_training_cases(latidosNorm, anotaciones, 'J', J_left, cantLatidos, tam)
+cantLatidos -= J_left
+all_N = latidosNorm
+N_left = cantLatidos
+# sio.savemat('training_set_J.mat', {'training_set_J': training_set_J})
+# sio.savemat('training_set_V.mat', {'training_set_V': training_set_V})
+# sio.savemat('training_set_S.mat', {'training_set_S': training_set_S})
+# sio.savemat('training_set_N.mat', {'training_set_N': training_set_N})
+sio.savemat('all_J.mat', {'all_J': all_J})
+sio.savemat('all_V.mat', {'all_V': all_V})
+sio.savemat('all_S.mat', {'all_S': all_S})
+sio.savemat('all_N.mat', {'all_N': all_N})
+cantidades = [N_left, V_left, S_left, J_left]
 sio.savemat('cantidades.mat', {'cantidades': cantidades})
