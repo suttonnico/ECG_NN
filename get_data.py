@@ -41,7 +41,7 @@ picos=annotation.annsamp
 #Transpongo las senales leidas para poder operar mas comodamente
 signals=np.matrix.transpose(signals2)
 picos[-1]=0 #descarto el ultimo pico por si el latido esta interrumpido
-tam = 55  #Tamano del latido que tomo a la izquierda y a la derecha de la anotacion
+tam = 125  #Tamano del latido que tomo a la izquierda y a la derecha de la anotacion
 cantLatidos=sum(picos>tam) #Cuento la cantidad de anotaciones en el segemento a analizar
 latidos=np.zeros([cantLatidos,2*tam]) #Reservo espacio para la matriz de datos cantLatidos x 2*tam
 latidosNorm=np.zeros([cantLatidos,2*tam])#Reservo espacio para la matriz de datos normalizados
